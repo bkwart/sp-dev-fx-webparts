@@ -1,4 +1,4 @@
-import { FileUploadService } from '../services/FileUploadSvc';
+import { FileUploadService } from '../services/fileUploadSvc';
 import { IFileItem } from "../../interfaces/IFileItem";
 import { IFile } from "../../interfaces/IFile";
 import { IError } from "../../interfaces/IError";
@@ -33,6 +33,9 @@ export class FileUploadCtrl {
   }
 
   public upload(): void {
+    if(!this.file){
+      return;
+    }
     this.isUploading = true;
     this.fileUploadService.uploadFile(this.libraryTitle, this.file)
       .then((response: IFileItem): void => {

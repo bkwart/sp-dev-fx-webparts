@@ -1,25 +1,36 @@
+import { Version } from '@microsoft/sp-core-library';
 import {
   BaseClientSideWebPart,
-  IPropertyPaneSettings,
-  IWebPartContext,
-  PropertyPaneTextField
+  IPropertyPaneConfiguration,
+  PropertyPaneTextField,
+  IWebPartContext
 } from '@microsoft/sp-webpart-base';
-import ModuleLoader from '@microsoft/sp-module-loader';
-import * as angular from 'angular';
-import './app/FileUploadModule';
+
+import { escape } from '@microsoft/sp-lodash-subset';
+import { SPComponentLoader } from '@microsoft/sp-loader';
 import styles from './AngularFileUpload.module.scss';
 import * as strings from 'angularFileUploadStrings';
 import { IAngularFileUploadWebPartProps } from './IAngularFileUploadWebPartProps';
 
+import * as angular from 'angular';
+import 'ng-office-ui-fabric';
+import { BaseService } from './app/services/baseSvc';
+import { FileUploadService } from './app/services/fileUploadSvc';
+import { FileUploadCtrl } from './app/controllers/fileUploadCtrl';
+import { CustomFileChange } from './app/directives/customFileChange';
+import { IsoToDateString } from './app/filters/isoToDateString';
+
 export default class AngularFileUploadWebPart extends BaseClientSideWebPart<IAngularFileUploadWebPartProps> {
+  public context: IWebPartContext;
   private $injector: ng.auto.IInjectorService;
   public constructor(context: IWebPartContext) {
-    super(context);
-    ModuleLoader.loadCss('https://appsforoffice.microsoft.com/fabric/2.6.1/fabric.min.css');
-    ModuleLoader.loadCss('https://appsforoffice.microsoft.com/fabric/2.6.1/fabric.components.min.css');
+    super();
+    SPComponentLoader.loadCss('https://appsforoffice.microsoft.com/fabric/2.6.1/fabric.min.css');
+    SPComponentLoader.loadCss('https://appsforoffice.microsoft.com/fabric/2.6.1/fabric.components.min.css');
   }
 
   public render(): void {
+
     if (this.renderedOnce === false) {
       this.domElement.innerHTML = `
       <div class="${styles.angularFileUpload}">
@@ -71,8 +82,9 @@ export default class AngularFileUploadWebPart extends BaseClientSideWebPart<IAng
           </div>
         </div>
       </div>`;
+      var context = this.context.pageContext;
 
-      this.$injector = angular.bootstrap(this.domElement, ['fileUploadApp']);
+      this.initAngularApp(context);
     }
     this.$injector.get('$rootScope').$broadcast('configurationChanged', {
       libraryTitle: this.properties.libraryTitle,
@@ -80,7 +92,29 @@ export default class AngularFileUploadWebPart extends BaseClientSideWebPart<IAng
     });
   }
 
-  protected get propertyPaneSettings(): IPropertyPaneSettings {
+  protected initAngularApp(pageContext: any) {
+
+    const fileUploadApp: ng.IModule = angular.module('fileUploadApp', [
+      'officeuifabric.core',
+      'officeuifabric.components'
+    ]);
+
+    fileUploadApp
+      .constant("pageContext", pageContext)
+      .service("baseService", BaseService)
+      .service("fileUploadService", FileUploadService)
+      .controller("fileUploadCtrl", FileUploadCtrl)
+      .filter("isoToDateString", IsoToDateString.filter)
+      .directive("customFileChange", CustomFileChange.factory());
+
+    this.$injector = angular.bootstrap(this.domElement, ['fileUploadApp']);
+  }
+
+  protected get dataVersion(): Version {
+    return Version.parse('1.0');
+  }
+
+  protected getPropertyPaneConfiguration(): IPropertyPaneConfiguration {
     return {
       pages: [
         {

@@ -1,11 +1,21 @@
 import * as React from 'react';
 import styles from './ScriptEditor.module.scss';
 import { IScriptEditorProps } from './IScriptEditorProps';
-import { Dialog, DialogType, DialogFooter, Button, ButtonType, TextField } from 'office-ui-fabric-react';
+import { Dialog, DialogType, DialogFooter } from 'office-ui-fabric-react/lib/Dialog';
+import { DefaultButton, PrimaryButton } from 'office-ui-fabric-react/lib/Button';
+import { TextField } from 'office-ui-fabric-react/lib/TextField';
+import { loadStyles } from '@microsoft/load-themed-styles';
+require('./overrides.css');
 
 export default class ScriptEditor extends React.Component<IScriptEditorProps, any> {
   constructor() {
     super();
+    const uiFabricCSS: string = `
+    .pzl-bgColor-themeDark, .pzl-bgColor-themeDark--hover:hover {
+      background-color: "[theme:themeDark, default:#005a9e]";
+    }
+    `;
+    loadStyles(uiFabricCSS);
     this.state = {
       showDialog: false
     };
@@ -36,14 +46,14 @@ export default class ScriptEditor extends React.Component<IScriptEditorProps, an
     const viewMode = <span dangerouslySetInnerHTML={{ __html: this.state.script }}></span>;
 
     return (
-      <div>
+      <div >
         <div className={styles.scriptEditor}>
           <div className={styles.container}>
-            <div className={`ms-Grid-row ms-bgColor-themeDark ms-fontColor-white ${styles.row}`}>
-              <div className="ms-Grid-col ms-u-lg10 ms-u-xl8 ms-u-xlPush2 ms-u-lgPush1">
+            <div className={`ms-Grid-row pzl-bgColor-themeDark ms-fontColor-white ${styles.row}`}>
+              <div className="ms-Grid-col ms-lg10 ms-xl8 ms-xlPush2 ms-lgPush1">
                 <span className="ms-font-xl ms-fontColor-white">The Modern Script Editor web part!</span>
                 <p className="ms-font-l ms-fontColor-white"></p>
-                <Button description='Opens the Sample Dialog' onClick={this._showDialog.bind(this)}>Edit snippet</Button>
+                <DefaultButton description='Opens the Sample Dialog' onClick={this._showDialog.bind(this)}>Edit snippet</DefaultButton>
               </div>
             </div>
           </div>
@@ -59,11 +69,11 @@ export default class ScriptEditor extends React.Component<IScriptEditorProps, an
         >
           <TextField multiline rows={15} onChanged={this._onScriptEditorTextChanged.bind(this)} value={this.state.script} />
           <DialogFooter>
-            <Button buttonType={ButtonType.primary} onClick={this._closeDialog.bind(this)}>Save</Button>
-            <Button onClick={this._cancelDialog.bind(this)}>Cancel</Button>
+            <PrimaryButton onClick={this._closeDialog.bind(this)}>Save</PrimaryButton>
+            <DefaultButton onClick={this._cancelDialog.bind(this)}>Cancel</DefaultButton>
           </DialogFooter>
           {viewMode}
         </Dialog>
-      </div>);
+      </div >);
   }
 }
