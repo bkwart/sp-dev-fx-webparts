@@ -1,11 +1,12 @@
 define([], function() {
   return {
     "SearchSettingsGroupName": "Search settings",
-    "SearchQueryFieldLabel": "Search query",
+    "SearchQueryKeywordsFieldLabel": "Search query keywords",
+    "QueryTemplateFieldLabel": "Query template",
     "SelectedPropertiesFieldLabel": "Selected Properties",
     "LoadingMessage": "Results are loading, please wait...",
     "MaxResultsCount": "Number of items to retrieve per page",
-    "NoResultMessage": "There is no items to show",    
+    "NoResultMessage": "There is no results to show",    
     "RefinersFieldLabel": "Refiners",
     "FilterPanelTitle": "Available filters",
     "FilterResultsButtonLabel": "Filter results",
@@ -13,6 +14,8 @@ define([], function() {
     "ApplyAllFiltersLabel": "Apply all filters",
     "RemoveAllFiltersLabel": "Remove all filters",
     "ShowPagingLabel": "Show paging",
+    "ShowFileIconLabel": "Show file icons",
+    "ShowCreatedDateLabel": "Show created date",
     "NoFilterConfiguredLabel": "No filter configured", 
     "SearchQueryPlaceHolderText": "Search query in KQL format",
     "EmptyFieldErrorMessage": "This field cannot be empty",

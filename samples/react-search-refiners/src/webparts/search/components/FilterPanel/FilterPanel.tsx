@@ -3,6 +3,7 @@ import IFilterPanelProps from "./IFilterPanelProps";
 import IFilterPanelState from "./IFilterPanelState";
 import { PrimaryButton, DefaultButton, IButtonProps } from 'office-ui-fabric-react/lib/Button';
 import { Panel, PanelType } from 'office-ui-fabric-react/lib/Panel';
+import { Checkbox } from 'office-ui-fabric-react/lib/Checkbox';
 import { Toggle } from 'office-ui-fabric-react/lib/Toggle';
 import * as strings from "SearchWebPartStrings";
 import { IRefinementResult, IRefinementValue, IRefinementFilter } from "../../../models/ISearchResult";
@@ -15,19 +16,13 @@ import {
     GroupedList,
     IGroup,
     IGroupDividerProps
-  } from 'office-ui-fabric-react/lib/components/GroupedList/index';
+} from 'office-ui-fabric-react/lib/components/GroupedList/index';
 import { Scrollbars } from 'react-custom-scrollbars';
 
 export default class FilterPanel extends React.Component<IFilterPanelProps, IFilterPanelState> {
-    
-    private _initialFilters: IRefinementResult[];
 
     public constructor(props) {
         super(props);
-
-        // The initialFilters are just set once and never updated afterwards so we don't need to put them in the component state.
-        // We dont' want the refiners update every time to be able to revert changes easily in the interface and don't lose initial refiners.
-        this._initialFilters = this.props.availableFilters;
 
         this.state = {
             showPanel: false,
@@ -51,8 +46,10 @@ export default class FilterPanel extends React.Component<IFilterPanelProps, IFil
         let items: JSX.Element[] = [];
         let groups: IGroup[] = [];
 
+        if (this.props.availableFilters.length === 0) return <span />;
+
         // Initialize the Office UI grouped list
-        this._initialFilters.map((filter, i) => {
+        this.props.availableFilters.map((filter, i) => {
 
             groups.push({
                 key: i.toString(),
@@ -64,7 +61,7 @@ export default class FilterPanel extends React.Component<IFilterPanelProps, IFil
             });
 
             items.push(
-                <div key= { i }>
+                <div key={i}>
                     <div className="filterPanel__filterProperty">
                         {
                             filter.Values.map((refinementValue: IRefinementValue, j) => {
@@ -76,15 +73,15 @@ export default class FilterPanel extends React.Component<IFilterPanelProps, IFil
                                 };
 
                                 return (
-                                    <Toggle
-                                    key={ j }
-                                    checked= { this._isInFilterSelection(currentRefinement) }
-                                    disabled={ false }
-                                    label={ Text.format(refinementValue.RefinementValue + " ({0})",  refinementValue.RefinementCount)} 
-                                    onChanged= {(checked: boolean) => {                                
-                                        // Every time we chek/uncheck a filter, a complete new search request is performed with current selected refiners
-                                        checked ? this._addFilter(currentRefinement): this._removeFilter(currentRefinement);
-                                    }} />
+                                    <Checkbox
+                                        key={j}
+                                        checked={this._isInFilterSelection(currentRefinement)}
+                                        disabled={false}
+                                        label={Text.format(refinementValue.RefinementValue + " ({0})", refinementValue.RefinementCount)}
+                                        onChange={(ev, checked: boolean) => {
+                                            // Every time we chek/uncheck a filter, a complete new search request is performed with current selected refiners
+                                            checked ? this._addFilter(currentRefinement) : this._removeFilter(currentRefinement);
+                                        }} />
                                 );
                             })
                         }
@@ -96,82 +93,79 @@ export default class FilterPanel extends React.Component<IFilterPanelProps, IFil
         const renderSelectedFilters: JSX.Element[] = this.state.selectedFilters.map((filter) => {
 
             return (
-                <PrimaryButton
-                    key ={filter.Value.RefinementToken }
-                    className="searchWp__selectedFilters__filterBtn"                   
-                    iconProps={ { iconName: 'StatusErrorFull' } }
-                    text={ filter.Value.RefinementName }
-                    onClick={ ()=> { this._removeFilter(filter); }}
-                />           
+                <Label className="filter">
+                    <i className="ms-Icon ms-Icon--ClearFilter" onClick={() => { this._removeFilter(filter); }}></i>
+                    {filter.Value.RefinementName}
+                </Label>
             );
         });
 
-        const renderAvailableFilters =  <GroupedList
-                                            ref='groupedList'
-                                            items={ items }
-                                            onRenderCell={ this._onRenderCell }
-                                            className="filterPanel__body__group"
-                                            groupProps={
-                                                {
-                                                    onRenderHeader: this._onRenderHeader,                                                    
-                                                }
-                                            }
-                                            groups={ groups }/>;
+        const renderAvailableFilters = <GroupedList
+            ref='groupedList'
+            items={items}
+            onRenderCell={this._onRenderCell}
+            className="filterPanel__body__group"
+            groupProps={
+                {
+                    onRenderHeader: this._onRenderHeader,
+                }
+            }
+            groups={groups} />;
 
         return (
             <div>
                 <DefaultButton
                     className="searchWp__filterResultBtn"
-                    iconProps={ { iconName: 'Filter' } }
-                    text={ strings.FilterResultsButtonLabel }
-                    onClick= { this._onTogglePanel }
-                />            
-                {  (this.state.selectedFilters.length > 0) ? 
+                    iconProps={{ iconName: 'Filter' }}
+                    text={strings.FilterResultsButtonLabel}
+                    onClick={this._onTogglePanel}
+                />
+                {(this.state.selectedFilters.length > 0) ?
 
-                        <div className="searchWp__selectedFilters">
-                            <Label className="searchWp__selectedFilterLbl ms-font-s">{ strings.SelectedFiltersLabel }</Label>
-                            { renderSelectedFilters } 
-                        </div>  
-                    : null                    
+                    <div className="searchWp__selectedFilters">
+                        {renderSelectedFilters}
+                    </div>
+                    : null
                 }
                 <Panel
                     className="filterPanel"
-                    isOpen={ this.state.showPanel }
-                    type={ PanelType.smallFixedFar }
-                    isBlocking={ false }
-                    isLightDismiss= { true }
-                    onDismiss={ this._onClosePanel }
-                    headerText={ strings.FilterPanelTitle }
-                    closeButtonAriaLabel='Close' 
-                    hasCloseButton={ true }
-                    headerClassName="filterPanel__header"                    
-                    onRenderBody={() => { 
-                        if(this._initialFilters.length > 0) {
+                    isOpen={this.state.showPanel}
+                    type={PanelType.smallFixedNear}
+                    isBlocking={false}
+                    isLightDismiss={true}
+                    onDismiss={this._onClosePanel}
+                    headerText={strings.FilterPanelTitle}
+                    closeButtonAriaLabel='Close'
+                    hasCloseButton={true}
+                    headerClassName="filterPanel__header"
+
+                    onRenderBody={() => {
+                        if (this.props.availableFilters.length > 0) {
                             return (
                                 <Scrollbars style={{ height: "100%" }}>
                                     <div className="filterPanel__body">
                                         <div className="filterPanel__body__allFiltersToggle">
-                                            <Toggle 
-                                                onText={ strings.RemoveAllFiltersLabel } 
-                                                offText={ strings.ApplyAllFiltersLabel } 
-                                                onChanged= {(checked: boolean) => {                                
+                                            <Toggle
+                                                onText={strings.RemoveAllFiltersLabel}
+                                                offText={strings.ApplyAllFiltersLabel}
+                                                onChanged={(checked: boolean) => {
                                                     checked ? this._applyAllfilters() : this._removeAllFilters();
                                                 }}
-                                                checked= { this.state.selectedFilters.length === 0 ? false : true }
+                                                checked={this.state.selectedFilters.length === 0 ? false : true}
                                             />
                                         </div>
-                                        { renderAvailableFilters }
+                                        {renderAvailableFilters}
                                     </div>
                                 </Scrollbars>
                             );
                         } else {
                             return (
                                 <div className="filterPanel__body">
-                                    { strings.NoFilterConfiguredLabel }
+                                    {strings.NoFilterConfiguredLabel}
                                 </div>
                             );
                         }
-                    }}>                
+                    }}>
                 </Panel>
             </div>
         );
@@ -179,38 +173,38 @@ export default class FilterPanel extends React.Component<IFilterPanelProps, IFil
 
     private _onRenderCell(nestingDepth: number, item: any, itemIndex: number) {
         return (
-          <div className="ms-Grid-row" data-selection-index={ itemIndex }>
+            <div className="ms-Grid-row" data-selection-index={itemIndex}>
                 <div className="ms-Grid-col ms-u-sm10 ms-u-md10 ms-u-lg10 ms-smPush1 ms-mdPush1 ms-lgPush1">
-                    { item }
-                </div>            
-          </div>
+                    {item}
+                </div>
+            </div>
         );
     }
 
     private _onRenderHeader(props: IGroupDividerProps): JSX.Element {
         return (
-       
-            <div className="ms-Grid-row" onClick={ () => {
 
-                    // Update the index for expanded groups to be able to keep it open after a re-render
-                    const updatedExpandedGroups = 
-                        props.group.isCollapsed ? 
-                            update(this.state.expandedGroups, {$push: [props.group.startIndex]}) :
-                            update(this.state.expandedGroups, {$splice: [[this.state.expandedGroups.indexOf(props.group.startIndex), 1]]});
-                                    
-                    this.setState({ 
-                        expandedGroups: updatedExpandedGroups,
-                    });
+            <div className="ms-Grid-row" onClick={() => {
 
-                    props.onToggleCollapse(props.group); 
-                }}>   
+                // Update the index for expanded groups to be able to keep it open after a re-render
+                const updatedExpandedGroups =
+                    props.group.isCollapsed ?
+                        update(this.state.expandedGroups, { $push: [props.group.startIndex] }) :
+                        update(this.state.expandedGroups, { $splice: [[this.state.expandedGroups.indexOf(props.group.startIndex), 1]] });
+
+                this.setState({
+                    expandedGroups: updatedExpandedGroups,
+                });
+
+                props.onToggleCollapse(props.group);
+            }}>
                 <div className="ms-Grid-col ms-u-sm1 ms-u-md1 ms-u-lg1">
                     <div className="header-icon">
-                        <i className={ props.group.isCollapsed ? "ms-Icon ms-Icon--ChevronDown" : "ms-Icon ms-Icon--ChevronUp"}></i>
+                        <i className={props.group.isCollapsed ? "ms-Icon ms-Icon--ChevronDown" : "ms-Icon ms-Icon--ChevronUp"}></i>
                     </div>
-                </div>             
+                </div>
                 <div className="ms-Grid-col ms-u-sm10 ms-u-md10 ms-u-lg10">
-                    <div className="ms-font-l">{ props.group.name }</div>
+                    <div className="ms-font-l">{props.group.name}</div>
                 </div>
             </div>
         );
@@ -219,7 +213,7 @@ export default class FilterPanel extends React.Component<IFilterPanelProps, IFil
     private _onClosePanel() {
         this.setState({ showPanel: false });
     }
-    
+
     private _onTogglePanel() {
         this.setState({ showPanel: !this.state.showPanel });
     }
@@ -227,7 +221,7 @@ export default class FilterPanel extends React.Component<IFilterPanelProps, IFil
     private _addFilter(filterToAdd: IRefinementFilter): void {
 
         // Add the filter to the selected filters collection
-        let newFilters = update(this.state.selectedFilters, {$push: [filterToAdd]});
+        let newFilters = update(this.state.selectedFilters, { $push: [filterToAdd] });
         this._applyFilters(newFilters);
     }
 
@@ -245,11 +239,11 @@ export default class FilterPanel extends React.Component<IFilterPanelProps, IFil
 
         let allFilters: IRefinementFilter[] = [];
 
-        this._initialFilters.map((filter) => {
+        this.props.availableFilters.map((filter) => {
 
-            filter.Values.map((refinementValue: IRefinementValue, index) => { 
-                allFilters.push({FilterName: filter.FilterName, Value: refinementValue});
-            });            
+            filter.Values.map((refinementValue: IRefinementValue, index) => {
+                allFilters.push({ FilterName: filter.FilterName, Value: refinementValue });
+            });
         });
 
         this._applyFilters(allFilters);
@@ -264,7 +258,7 @@ export default class FilterPanel extends React.Component<IFilterPanelProps, IFil
      * @param selectedFilters The filters to apply
      */
     private _applyFilters(selectedFilters: IRefinementFilter[]): void {
-       
+
         // Save the selected filters
         this.setState({
             selectedFilters: selectedFilters,
@@ -272,15 +266,15 @@ export default class FilterPanel extends React.Component<IFilterPanelProps, IFil
 
         this.props.onUpdateFilters(selectedFilters);
     }
-    
+
     /**
      * Checks if the current filter is present in the list of the selected filters
      * @param filterToCheck The filter to check
      */
     private _isInFilterSelection(filterToCheck: IRefinementFilter): boolean {
 
-        let newFilters = this.state.selectedFilters.filter((filter) => {         
-            return filter.Value.RefinementToken === filterToCheck.Value.RefinementToken;            
+        let newFilters = this.state.selectedFilters.filter((filter) => {
+            return filter.Value.RefinementToken === filterToCheck.Value.RefinementToken;
         });
 
         return newFilters.length === 0 ? false : true;

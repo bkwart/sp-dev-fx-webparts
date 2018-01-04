@@ -1,11 +1,12 @@
 define([], function() {
   return {
     "SearchSettingsGroupName": "Paramètres de recherche",
-    "SearchQueryFieldLabel": "Requête de recherche",
+    "SearchQueryKeywordsFieldLabel": "Mots clés de recherche",
+    "QueryTemplateFieldLabel": "Modèle de reqûete",
     "SelectedPropertiesFieldLabel": "Propriétés à récupérer",
     "LoadingMessage": "Les résultats sont en cours de chargement, veuillez patienter...",
     "MaxResultsCount": "Nombre de résulats à récupérer par page",
-    "NoResultMessage": "Il n'y a aucun élément à afficher.",
+    "NoResultMessage": "Il n'y a aucun résultat à afficher.",
     "RefinersFieldLabel": "Filtres",
     "FilterPanelTitle": "Filtres disponibles",
     "FilterResultsButtonLabel": "Filtrer l'affichage",
@@ -13,6 +14,8 @@ define([], function() {
     "ApplyAllFiltersLabel": "Appliquer tous les filters",
     "RemoveAllFiltersLabel": "Supprimer tous les filtres",
     "ShowPagingLabel": "Afficher la pagination",
+    "ShowFileIconLabel": "Afficher les icônes de fichier",
+    "ShowCreatedDateLabel": "Afficher la date de création",
     "NoFilterConfiguredLabel": "Aucun filtre configuré", 
     "SearchQueryPlaceHolderText": "Requête de recherche au format KQL",
     "EmptyFieldErrorMessage": "Ce champ ne peut pas être vide",    
