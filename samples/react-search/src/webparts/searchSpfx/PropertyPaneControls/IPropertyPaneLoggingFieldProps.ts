@@ -1,6 +1,6 @@
 export interface IPropertyPaneLoggingFieldProps {
     label?: string;
     description?: string;
-    value: any;
+    value?: any;
     retrieve?: Function;
 }

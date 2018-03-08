@@ -1,15 +1,20 @@
 {
-  "entries": [
-    {
-      "entry": "./lib/webparts/searchSpfx/SearchSpfxWebPart.js",
-      "manifest": "./src/webparts/searchSpfx/SearchSpfxWebPart.manifest.json",
-      "outputPath": "./dist/search-spfx.bundle.js"
+  "$schema": "https://dev.office.com/json-schemas/spfx-build/config.2.0.schema.json",
+  "version": "2.0",
+  "bundles": {
+    "search-spfx-bundle": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/searchSpfx/SearchSpfxWebPart.js",
+          "manifest": "./src/webparts/searchSpfx/SearchSpfxWebPart.manifest.json"
+        }
+      ]
     }
-  ],
-  "externals": {
-    "moment": "https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.14.1/moment.min.js"
   },
   "localizedResources": {
-    "mystrings": "webparts/searchSpfx/loc/{locale}.js"
+    "mystrings": "lib/webparts/searchSpfx/loc/{locale}.js"
+  },
+  "externals": {
+    "moment": "https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.14.1/moment.min.js"
   }
 }

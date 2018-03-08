@@ -9,7 +9,7 @@ import { IExternalTemplate } from '../utils/ITemplates';
 
 import TemplateLoader from '../templates/TemplateLoader';
 
-import 'SearchSpfx.module.scss';
+import './SearchSpfx.module.scss';
 
 export interface ISearchSpfxProps extends ISearchSpfxWebPartProps {
 	context: IWebPartContext;
@@ -36,7 +36,7 @@ export default class SearchSpfx extends React.Component<ISearchSpfxProps, ISearc
 			template: ""
 		};
 		this._onChange = this._onChange.bind(this);
-	};
+	}
 
 	public componentWillMount(): void {
 		// Check if rendering is done from an external template

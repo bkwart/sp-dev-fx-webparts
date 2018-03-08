@@ -100,7 +100,7 @@ export default class PropertyPaneLoggingFieldHost extends React.Component<IPrope
 				{
 					(() => {
 						if (typeof this.props.retrieve !== 'undefined') {
-							return <div className={styles.updateLogging}><a className="ms-Link" onClick={this.getLogging} role="button">Update logging</a></div>;
+							return <div className={styles.updateLogging}><a className={`ms-Link ${styles.ms_Link}`} onClick={this.getLogging} role="button">Update logging</a></div>;
 						}
 					})()
 				}
