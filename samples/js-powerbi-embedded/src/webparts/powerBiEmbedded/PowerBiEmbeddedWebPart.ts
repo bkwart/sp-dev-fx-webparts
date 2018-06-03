@@ -1,21 +1,17 @@
 import {
   BaseClientSideWebPart,
-  IPropertyPaneSettings,
-  IWebPartContext,
+  IPropertyPaneConfiguration,
   PropertyPaneTextField
-} from '@microsoft/sp-client-preview';
+} from '@microsoft/sp-webpart-base';
+
+import * as pbi from 'powerbi-client';
 
 import styles from './PowerBiEmbedded.module.scss';
-import * as pbi from 'powerbi-client';
 import * as strings from 'powerBiEmbeddedStrings';
 import { IPowerBiEmbeddedWebPartProps } from './IPowerBiEmbeddedWebPartProps';
 
 declare var powerbi;
 export default class PowerBiEmbeddedWebPart extends BaseClientSideWebPart<IPowerBiEmbeddedWebPartProps> {
-
-  public constructor(context: IWebPartContext) {
-    super(context);
-  }
 
   public render(): void {
     this.domElement.innerHTML = `<div id="reportContainer" style="height:500px;"></div><a id="fullscreen">FULL SCREEN</a>`;
@@ -46,7 +42,7 @@ export default class PowerBiEmbeddedWebPart extends BaseClientSideWebPart<IPower
     });
   }
 
-  protected get propertyPaneSettings(): IPropertyPaneSettings {
+  protected getPropertyPaneConfiguration(): IPropertyPaneConfiguration {
     return {
       pages: [
         {

@@ -1,0 +1,8 @@
+{
+  "@microsoft/generator-sharepoint": {
+    "version": "1.4.1",
+    "libraryName": "powerbi",
+    "libraryId": "5f691cbd-840e-48d2-8403-d0c525ba1c1b",
+    "environment": "spo"
+  }
+}

@@ -2,9 +2,11 @@
   "solution": {
     "name": "powerbi-client-side-solution",
     "id": "5f691cbd-840e-48d2-8403-d0c525ba1c1b",
-    "version": "1.0.0.0"
+    "version": "1.0.0.0",
+    "includeClientSideAssets": true,
+    "skipFeatureDeployment": true
   },
   "paths": {
-    "zippedPackage": "powerbi.spapp"
+    "zippedPackage": "solution/powerbi.sppkg"
   }
 }
